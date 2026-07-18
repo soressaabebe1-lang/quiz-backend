@@ -57,13 +57,17 @@ def login():
             "msg":"Incorrect data"
             }),400
     
-    token = create_access_token(identity=str(user.id))
+    token = create_access_token(
+        identity=str(user.id),
+        additional_claims={"is_admin": user.is_admin}
+    )
 
 
     return jsonify({
         "status": "success", 
         "token": token , 
-        "user_id":user.id}), 200
+        "user_id":user.id,
+        "is_admin":user.is_admin}), 200
     
 
 

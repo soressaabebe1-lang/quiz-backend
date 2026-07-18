@@ -8,6 +8,7 @@ class Students(db.Model):
     name = db.Column(db.String(100), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     password_hash = db.Column(db.String(), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     def set_password(self,password):
         self.password_hash = generate_password_hash(password)
@@ -19,7 +20,8 @@ class Students(db.Model):
         return {
             "id":self.id,
             "name":self.name,
-            "age":self.age
+            "age":self.age,
+            "is_admin":self.is_admin
             }
 
 

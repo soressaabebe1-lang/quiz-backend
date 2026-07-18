@@ -1,6 +1,7 @@
 from flask import Blueprint,request,jsonify
 from flask_jwt_extended import jwt_required
 from project.models import db, Students, Score
+from project.utils import admin_required
 
 users_bp = Blueprint("users",__name__)
 
@@ -27,6 +28,9 @@ def student_private_homepage(user_id):
         "User_Info": student.to_dict(),
         "Score_Info": score
     })
+
+
+
 
 
 @users_bp.route("/students", methods=["GET"])
@@ -70,7 +74,7 @@ def update_student(data_id):
         "data":data_list.to_dict()}), 200
 
 @users_bp.route("/students/<int:data_id>", methods=["DELETE"])
-@jwt_required()
+@admin_required
 def delete_student(data_id):
     data_list=Students.query.get(data_id)
     if not data_list:

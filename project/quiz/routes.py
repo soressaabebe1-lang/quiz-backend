@@ -14,19 +14,13 @@ def submit_quiz():
     # data should be a list of:
     # [{"question_id": 1, "answer": "A"}, ...]
     if not data:
-        return jsonify({
-            "Status": "error",
-            "msg": "No answers provided"
-            }), 400
+        return jsonify({"message": "No answers provided"}), 400
 
     questions = Questions.query.all()
     total = len(questions)
 
     if total == 0:
-        return jsonify({
-            "Status": "error",
-            "msg": "No questions in database"
-            }), 400
+        return jsonify({"message": "No questions in database"}), 400
 
     
     correct_answers = {q.id: q.answer for q in questions}
@@ -62,7 +56,6 @@ def submit_quiz():
 def get_scores():
     scores = Score.query.order_by(Score.score.desc()).all()
     return jsonify({
-        "Status": "success",
         "count": len(scores),
         "data": [s.to_dict() for s in scores]
     }), 200
@@ -75,7 +68,6 @@ def my_scores():
     student_id = get_jwt_identity()
     scores = Score.query.filter_by(student_id=student_id).all()
     return jsonify({
-        "Status": "success",
         "count": len(scores),
         "data": [s.to_dict() for s in scores]
     }), 200
