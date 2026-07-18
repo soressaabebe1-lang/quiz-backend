@@ -54,6 +54,10 @@ class QuizService {
     await _client.post(ApiConfig.questions, question.toCreateJson());
   }
 
+  Future<void> importQuestionsFromExcel(String fileName, List<int> bytes) async {
+    await _client.postMultipartFile(ApiConfig.questionsImport, 'file', fileName, bytes);
+  }
+
   Future<void> deleteQuestion(int id) async {
     await _client.delete(ApiConfig.questionById(id));
   }

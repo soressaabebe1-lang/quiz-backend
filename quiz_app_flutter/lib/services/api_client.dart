@@ -116,6 +116,30 @@ class ApiClient {
     throw ApiException(res.statusCode, _extractMessage(body, res.statusCode));
   }
 
+  Future<Map<String, dynamic>> postMultipartFile(
+    String url,
+    String fieldName,
+    String fileName,
+    List<int> bytes, {
+    bool auth = true,
+  }) async {
+    final request = http.MultipartRequest('POST', Uri.parse(url));
+    if (auth) {
+      final token = await getToken();
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+    }
+    request.files.add(http.MultipartFile.fromBytes(fieldName, bytes, filename: fileName));
+
+    final streamedResponse = await request.send();
+    final body = await streamedResponse.stream.bytesToString();
+    final response = http.Response(body, streamedResponse.statusCode, headers: streamedResponse.headers);
+    final decoded = _decode(response);
+    if (response.statusCode >= 200 && response.statusCode < 300) return decoded;
+    throw ApiException(response.statusCode, _extractMessage(decoded, response.statusCode));
+  }
+
   Future<Map<String, dynamic>> delete(String url, {bool auth = true}) async {
     final res = await http.delete(Uri.parse(url), headers: await _headers(auth: auth));
     final body = _decode(res);

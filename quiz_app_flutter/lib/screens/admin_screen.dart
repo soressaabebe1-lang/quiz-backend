@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../models/question.dart';
 import '../models/student.dart';
@@ -163,6 +164,7 @@ class _QuestionsTabState extends State<_QuestionsTab> {
   final _quizService = QuizService();
   List<Question> _questions = [];
   bool _loading = true;
+  bool _importingFile = false;
   String? _errorMessage;
 
   @override
@@ -208,6 +210,40 @@ class _QuestionsTabState extends State<_QuestionsTab> {
     if (added == true) _load();
   }
 
+  Future<void> _importFromExcel() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['xlsx'],
+      );
+      if (result == null || result.files.isEmpty) return;
+
+      final pickedFile = result.files.single;
+      if (pickedFile.bytes == null || pickedFile.name.isEmpty) {
+        throw Exception('Please choose a valid .xlsx file');
+      }
+
+      setState(() => _importingFile = true);
+      await _quizService.importQuestionsFromExcel(pickedFile.name, pickedFile.bytes!);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Questions imported successfully')),
+        );
+      }
+      await _load();
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    } finally {
+      if (mounted) setState(() => _importingFile = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) return const Center(child: CircularProgressIndicator());
@@ -231,9 +267,22 @@ class _QuestionsTabState extends State<_QuestionsTab> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openAddQuestionSheet,
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            onPressed: _importingFile ? null : _importFromExcel,
+            icon: _importingFile
+                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Icon(Icons.upload_file),
+            label: Text(_importingFile ? 'Importing…' : 'Import Excel'),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            onPressed: _openAddQuestionSheet,
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }

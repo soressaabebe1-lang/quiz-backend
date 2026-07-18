@@ -14,6 +14,7 @@ class ApiConfig {
   static String studentById(int id) => "$baseUrl/students/$id";
 
   static const String questions = "$baseUrl/question";
+  static const String questionsImport = "$baseUrl/question/import";
   static String questionById(int id) => "$baseUrl/question/$id";
 
   static const String quizSubmit = "$baseUrl/quiz/submit";
