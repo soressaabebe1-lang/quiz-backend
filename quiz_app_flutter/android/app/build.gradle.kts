@@ -43,3 +43,14 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// Force all plugin subprojects (like file_picker) to compile against API 36
+subprojects {
+    afterEvaluate {
+        if (extensions.findByName("android") != null) {
+            configure<com.android.build.gradle.BaseExtension> {
+                compileSdk = 36
+            }
+        }
+    }
+}
