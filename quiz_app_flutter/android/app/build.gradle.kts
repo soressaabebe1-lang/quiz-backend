@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.quiz_app"
-    compileSdk = 36
+    compileSdk = 36 // Changed from flutter.compileSdkVersion to 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -42,15 +42,4 @@ kotlin {
 
 flutter {
     source = "../.."
-}
-
-// Force all plugin subprojects (like file_picker) to compile against API 36
-subprojects {
-    afterEvaluate {
-        if (extensions.findByName("android") != null) {
-            configure<com.android.build.gradle.BaseExtension> {
-                compileSdk = 36
-            }
-        }
-    }
 }
