@@ -1,6 +1,6 @@
 __pycache__/
-instance/
-venvvenv/
-quiz_app_flutter/
-.env
 *.pyc
+instance/
+.env
+venv/
+.venv/

@@ -23,21 +23,8 @@ def create_app():
     app.register_blueprint(quiz_bp)
 
 
+
     with app.app_context():
-            db.create_all()
-            
-            from project.models import Students
-            admin_exists = Students.query.filter_by(is_admin=True).first()
-            
-            if not admin_exists:
-                admin = Students(
-                    username="soressa",
-                    age=19,
-                    is_admin=True
-                )
-                admin.set_password("211664")
-                db.session.add(admin)
-                db.session.commit()
-                print("====== Live Admin Created Successfully! ======")
+        db.create_all()
 
     return app
